@@ -1,49 +1,65 @@
+/*
+  ALUNOS
+- Emerson B. Filho
+- Gustavo K. Volobueff
+- Gustavo M. Goncalves
+- Victor K. O. Takatu
+- Vinicius A. Schautz
+
+  TERMINAL - OPERACAO EM LINUX (Pasta com 'main.c | myList.a | myList.h')
+
+- Compilacao: gcc main.c -lm myList.a -o main
+- Execucao: ./main
+*/
 #include "myList.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 
-#define FORA_LIMITE "\n[ERRO] O Valor informado deve ser entre %d e %d!\n"
-#define INEXISTENTE "\nNao existem numeros narcisistas entre 10 e %d!\n"
-#define BUSCA_0 "\n[ERRO] O numero %d nao existe na lista!\n"
+//SAIDAS DE ERRO - INSUCESSO
+#define SAIDA_FORA_LIMITE "\n[ERRO] O Valor informado deve ser entre %d e %d!\n"
+#define SAIDA_BUSCA_0 "\n[ERRO] O numero %d nao existe na lista!\n"
+//SAIDAS DE RESULTADOS
+#define SAIDA_INEXISTE "\nNao existem numeros narcisistas entre 10 e %d!\n"
+//DADOS-BASE
 #define MIN_N 10
 #define MAX_N 1000000
 
-void pause(){system("read -p '\n\nAperte qualquer tecla para continuar...\n' var");} //<=> system("pause");
-
-void clear(){puts("\x1b[H\x1b[2J");} //<=> system("clear");
+//como em system("pause")
+void pause(){system("read -p '\n\nAperte qualquer tecla para continuar...\n' var");}
+//como em system("clear")
+void clear(){puts("\x1b[H\x1b[2J");}
 
 void console_exclusao()
 {
     int n_delete;
-    char choice;
+    char escolha;
 
-    printf("\n\nDeseja excluir algum numero da lista? (S/n)\n--> ");
         do{
-            scanf(" %c", &choice);
+            printf("\nDeseja excluir algum numero da lista? (S/n)\n--> ");
+            scanf(" %c", &escolha);
 
-            if(choice == 'S' || choice == 's'){
+            if(escolha == 'S' || escolha == 's'){
                 do{
-                    printf("\n\nInforme o numero que deseja excluir:\n--> ");
+                    printf("\nInforme o numero que deseja excluir:\n--> ");
                     scanf("%d", &n_delete);
 
                     if(!busca(n_delete))
-                        printf(BUSCA_0, n_delete);
+                        printf(SAIDA_BUSCA_0, n_delete);
                     
                 }while(!busca(n_delete));
 
                 retira(n_delete);
 
                 clear();
-                printf("\nLista sem o numero %d:\n\n", n_delete);
+                printf("Lista sem o numero %d:\n", n_delete);
                 imprime();
             }
-            else if(choice == 'n' || choice == 'N')
-                printf("\n\nFim da execucao!\n");
-            else
-                printf("\n\n[ERRO] Informe: (S/n)\n--> ");
-        }while(choice != 'S' && choice != 's' && choice != 'n' && choice != 'N');
+            else if(escolha == 'n' || escolha == 'N')
+                printf("\n\n---Fim da execucao---\n");
+
+        }while(escolha != 'S' && escolha != 's' && escolha != 'N' && escolha != 'n');
 }
 
 int comprimento(int num)
@@ -70,39 +86,49 @@ int numNarcisista(int num)
     return 0;
 }
 
-int main(/*int argc, char *argv[]*/)
+int leitura_inicial()
 {
-    int i, exist = 0, number;// = atoi(argv[1]);
+    int num;
 
-    //leitura de n
     do{
         clear();
 
         printf("Informe um numero entre %d e %d:\n--> ", MIN_N, MAX_N);
-        scanf("%d", &number);
+        scanf("%d", &num);
 
-        if((number < MIN_N) || (number > MAX_N)){
-            printf(FORA_LIMITE, MIN_N, MAX_N);
+        if((num < MIN_N) || (num > MAX_N)){
+            printf(SAIDA_FORA_LIMITE, MIN_N, MAX_N);
             pause();
         }
-    }while((number < MIN_N) || (number > MAX_N));
+    }while((num < MIN_N) || (num > MAX_N));
+
+    return num;
+}
+
+int main(/*int argc, char *argv[]*/)
+{
+    int n, i, existe = 0;
+
+    n = leitura_inicial();
 
     inicializa();
 
-    for(i=MIN_N;i<=number;i++){
+    for(i=MIN_N;i<=n;i++){
         if(numNarcisista(i)){
-            exist++;
+            existe++;
             insereOrdem(i);
         }
     }
 
     //se nao existirem numeros narcisistas entre 10 e o numero informado
-    if(!exist)
-        printf(INEXISTENTE, number);
-    else //caso contrario
+    if(!existe)
+        printf(SAIDA_INEXISTE, n);
+    else
+    { //caso contrario
         imprime();
 
-    console_exclusao();
+        console_exclusao();
+    }
 
     esvazia();
 }
