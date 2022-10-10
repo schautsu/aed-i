@@ -17,119 +17,131 @@
 #include <stdlib.h>
 #include <math.h>
 
-//SAIDAS DE ERRO - INSUCESSO
-#define SAIDA_FORA_LIMITE "\n[ERRO] O Valor informado deve ser entre %d e %d!\n"
-#define SAIDA_BUSCA_0 "\n[ERRO] O numero %d nao existe na lista!\n"
-//SAIDAS DE RESULTADOS
-#define SAIDA_INEXISTE "\nNao existem numeros narcisistas entre 10 e %d!\n"
 //DADOS-BASE
 #define MIN_N 10
 #define MAX_N 1000000
+//SAIDAS DE ERRO - INSUCESSO
+#define SAIDA_FORA_LIMITE "\n[ERRO] O Valor informado deve ser entre %d e %d!\n"
+#define SAIDA_BUSCA_0 "\n[ERRO] O numero %d nao existe na lista!\n"
+#define S_OU_N "\n[ERRO] Informe uma resposta valida!\n"
+//SAIDAS DE RESULTADOS
+#define SAIDA_INEXISTE "\nNao existem numeros narcisistas entre %d e %d!\n"
 
 //como em system("pause")
 void pause(){system("read -p '\n\nAperte qualquer tecla para continuar...\n' var");}
 //como em system("clear")
 void clear(){puts("\x1b[H\x1b[2J");}
 
-void console_exclusao() //algoritmo envolvendo a exclusao ou nao de um elemento da lista
+void excluiNum(int num) //excluir um numero e exibir a nova lista
 {
-  int n_delete;
-  char escolha;
+    retira(num);
 
-      do{
-          printf("\nDeseja excluir algum numero da lista? (S/n)\n--> ");
-          scanf(" %c", &escolha);
-
-          if(escolha == 'S' || escolha == 's'){ //excluir
-              do{ //repete enquanto o numero fornecido nao estiver na lista
-                  printf("\nInforme o numero que deseja excluir:\n--> ");
-                  scanf("%d", &n_delete);
-
-                  if(!busca(n_delete))
-                      printf(SAIDA_BUSCA_0, n_delete);
-
-              }while(!busca(n_delete));
-
-              retira(n_delete);
-
-              clear();
-              printf("Lista sem o numero %d:\n", n_delete);
-              imprime();
-          }
-          else if(escolha == 'n' || escolha == 'N') //nao excluir
-              printf("\n\n---Fim da execucao---\n");
-
-      }while(escolha != 'S' && escolha != 's' && escolha != 'N' && escolha != 'n');
+    clear();
+    printf("Lista sem o numero %d:\n", num);
+    imprime();
 }
 
-int comprimento(int num) //retorna o comprimento do numero
+int escolhaValida(char escolha) //retorna 0 se a escolha for invalida ou 1 se for valida
 {
-  if(num == 1000000) return 7;
-  if(num >= 100000) return 6;
-  if(num >= 10000) return 5;
-  if(num >= 1000) return 4;
-  if(num >= 100) return 3;
-  return 2;
+    if(escolha != 'S' && escolha != 's' && escolha != 'N' && escolha != 'n'){
+        printf(S_OU_N);
+        pause();
+
+        return 0;
+    }
+    return 1;
 }
 
-int numNarcisista(int num) //verifica se um dado numero e narcisista
+void handler_excluir(int existe, int n) //operacao geral de exclusao de numeros
 {
-  int pot = comprimento(num), sum = 0, num_aux = num;
+    int n_delete;
+    char escolha;
 
-  while(num_aux > 0){ 
-      sum += pow(num_aux % 10, pot); //a soma recebe cada digito de num elevado ao comprimento de num
+    do{
+        clear();
+        imprime();
 
-      num_aux /= 10; 
-  }
+        printf("\nDeseja excluir algum numero da lista? (S/n)\n--> ");
+        scanf(" %c", &escolha);
+    }while(!escolhaValida(escolha));
 
-  if(sum == num) return num;
-  return 0;
+    if(escolha == 'S' || escolha == 's'){
+
+        do{
+            clear();
+            imprime();
+
+            printf("\nInforme o numero que deseja excluir:\n--> ");
+            scanf("%d", &n_delete);
+
+            if(!busca(n_delete)){
+                printf(SAIDA_BUSCA_0, n_delete);
+                pause();
+            }
+        }while(!busca(n_delete));
+
+        excluiNum(n_delete);
+    }
+    printf("\n\n---Fim da execucao---\n");
 }
 
-int leitura_inicial() //leitura do numero fornecido pelo usuario
+int numNarcisista(int num) //verificar se dado numero eh narcisista
 {
-  int num;
+    int exp = log10(num)+1, sum = 0, num_aux = num;
 
-  do{
-      clear();
+    while(num_aux > 0){
+        sum += pow(num_aux % 10, exp);
 
-      printf("Informe um numero entre %d e %d:\n--> ", MIN_N, MAX_N);
-      scanf("%d", &num);
+        num_aux /= 10;
+    }
 
-      if((num < MIN_N) || (num > MAX_N)){ //se num for menor que 10 ou maior que 1000000
-          printf(SAIDA_FORA_LIMITE, MIN_N, MAX_N);
-          pause();
-      }
-  }while((num < MIN_N) || (num > MAX_N));
-
-  return num;
+    if(sum == num) return num;
+    return 0;
 }
+
+int leitura_inicial() //ler a entrada
+{
+    int num;
+
+    do{
+        clear();
+
+        printf("Informe um numero entre %d e %d:\n--> ", MIN_N, MAX_N);
+        scanf("%d", &num);
+
+        if((num < MIN_N) || (num > MAX_N)){
+            printf(SAIDA_FORA_LIMITE, MIN_N, MAX_N);
+            pause();
+        }
+    }while((num < MIN_N) || (num > MAX_N));
+
+    return num;
+}
+
 
 int main()
 {
-  int n, i, existe = 0;
+    int n, i, existe = 0;
 
-  n = leitura_inicial(); //n: numero fornecido pelo usuario
+    n = leitura_inicial();
 
-  inicializa();
-  
-  //verifica os numeros narcisistas de 10 ate n
-  for(i=MIN_N;i<=n;i++){
-      if(numNarcisista(i)){
-          existe++; //existe pelo menos um no. narcisista
-          insereOrdem(i);
-      }
-  }
+    inicializa();
+    
+    //procurar por numeros narcisitas entre 10 e n
+    for(i=MIN_N;i<=n;i++){
+        if(numNarcisista(i)){
+            existe++;
+            insereOrdem(i);
+        }
+    }
 
-  
-  if(!existe) //se nao existirem numeros narcisistas entre 10 e o numero informado
-      printf(SAIDA_INEXISTE, n);
-  else //caso contrario
-  { 
-      imprime();
+    //se nao existirem numeros narcisistas entre 10 e n
+    if(!existe)
+        printf(SAIDA_INEXISTE, MIN_N, n);
+    else
+    { //caso contrario
+        handler_excluir(existe, n);
 
-      console_exclusao();
-  }
-
-  esvazia();
+        esvazia();
+    }
 }
