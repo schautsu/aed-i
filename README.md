@@ -1,2 +1,2 @@
 # aed-i
-Some code to solve some problem from AED-I.
+Some codes to solve some problems from AED-I.
