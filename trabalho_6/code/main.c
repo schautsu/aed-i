@@ -147,7 +147,6 @@ void excluiNum(int num) /*excluir um numero e exibir a nova lista*/
     retira(num);
 
     clear();
-    printf("Lista sem o numero %d:\n", num);
     imprime();
 }
 /*como em system("pause")*/
