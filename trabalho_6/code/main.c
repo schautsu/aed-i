@@ -24,13 +24,12 @@
 #define SAIDA_BUSCA_0 "\n[ERRO] O numero %d nao existe na lista!\n"
 #define S_OU_N "\n[ERRO] Informe uma resposta valida!\n"
 /*SAIDAS DE RESULTADOS*/
-#define SAIDA_INEXISTE "\nNao existem numeros narcisistas entre %d e %d!\n"
-#define SAIDA_EXISTE "Numeros narcisistas entre %d e %d:\n"
+#define SAIDA_INEXISTE "\nNao existem numeros narcisistas entre %d e %d [lista vazia]!\n"
 
 /*prototipos de funcao*/
 void clear(void);
 void pause(void);
-void handler_excluir(int);
+void handler_excluir(int,int);
 void excluiNum(int);
 int leitura_inicial(void);
 int numNarcisista(int);
@@ -51,15 +50,13 @@ int main()
             insereOrdem(i);
         }
     }
-
-    /*se nao existirem numeros narcisistas entre 10 e n*/
-    if(!existe)
-        printf(SAIDA_INEXISTE, MIN_N, n);
-    else
-    { /*caso contrario*/
-        handler_excluir(n);
+    /*se existir numeros narcisistas entre 10 e n*/
+    if(existe){
+        handler_excluir(n, existe);
         esvazia();
-    }
+    } else printf(SAIDA_INEXISTE, MIN_N, n);
+
+    printf("\n\n-----Fim da execucao-----\n"); 
 }
 
 int leitura_inicial() /*ler a entrada*/
@@ -81,13 +78,13 @@ int leitura_inicial() /*ler a entrada*/
     return num;
 }
 
-int numNarcisista(int num) /*verificar se dado numero eh narcisista*/
+int numNarcisista(int num) /*verificar se dado numero e narcisista*/
 {
     int exp = log10(num)+1, sum = 0, num_aux = num;
 
-    while(num_aux > 0){
+    while(num_aux > 0)
+    {  
         sum += pow(num_aux % 10, exp);
-
         num_aux /= 10;
     }
 
@@ -95,47 +92,43 @@ int numNarcisista(int num) /*verificar se dado numero eh narcisista*/
     return 0;
 }
 
-void handler_excluir(int n) /*operacao geral de exclusao de numeros*/
+void handler_excluir(int n, int existe) /*operacao geral de exclusao de numeros*/
 {
     int n_delete;
     char escolha;
 
     do{
-        clear();
-        printf(SAIDA_EXISTE, MIN_N, n);
-        imprime();
-
-        printf("\nDeseja excluir algum numero da lista? (S/n)\n--> ");
-        scanf(" %c", &escolha);
-    }while(!escolhaValida(escolha));
-
-    if(escolha == 'S' || escolha == 's'){
-
         do{
             clear();
             imprime();
 
-            printf("\nInforme o numero que deseja excluir:\n--> ");
-            scanf("%d", &n_delete);
+            printf("\nDeseja excluir algum numero da lista? (S/n)\n--> ");
+            scanf(" %c", &escolha);
+        }while(!escolhaValida(escolha));
 
-            if(!busca(n_delete)){
-                printf(SAIDA_BUSCA_0, n_delete);
-                pause();
-            }
-        }while(!busca(n_delete));
+        if(escolha == 'S' || escolha == 's'){
+            do{
+                clear();
+                imprime();
 
-        excluiNum(n_delete);
+                printf("\nInforme o numero que deseja excluir:\n--> ");
+                scanf("%d", &n_delete);
+
+                if(!busca(n_delete)){
+                    printf(SAIDA_BUSCA_0, n_delete);
+                    pause();
+                }
+            }while(!busca(n_delete));
+
+            excluiNum(n_delete);
+            existe--;
+        } else break;
+    }while(existe);
+
+    if(!existe){
+        clear();
+        printf(SAIDA_INEXISTE, MIN_N, n);
     }
-    printf("\n\n---Fim da execucao---\n");
-}
-
-void excluiNum(int num) /*excluir um numero e exibir a nova lista*/
-{
-    retira(num);
-
-    clear();
-    printf("Lista sem o numero %d:\n", num);
-    imprime();
 }
 
 int escolhaValida(char escolha) /*retorna 0 se a escolha for invalida ou 1 se for valida*/
@@ -147,6 +140,15 @@ int escolhaValida(char escolha) /*retorna 0 se a escolha for invalida ou 1 se fo
         return 0;
     }
     return 1;
+}
+
+void excluiNum(int num) /*excluir um numero e exibir a nova lista*/
+{
+    retira(num);
+
+    clear();
+    printf("Lista sem o numero %d:\n", num);
+    imprime();
 }
 /*como em system("pause")*/
 void pause(){system("read -p '\n\nAperte qualquer tecla para continuar...\n' var");}
