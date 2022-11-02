@@ -1,11 +1,4 @@
 /*
-  ALUNOS
-- Emerson B. Filho
-- Gustavo K. Volobueff
-- Gustavo M. Goncalves
-- Victor K. O. Takatu
-- Vinicius A. Schautz
-
   TERMINAL - OPERACAO EM LINUX (Pasta com 'main.c | myList.a | myList.h')
 
 - Compilacao: gcc main.c -lm myList.a -o main
