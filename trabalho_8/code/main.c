@@ -212,8 +212,8 @@ void pesquisa_palavra() /*Procura uma dada palavra e exibe sua frequencia*/
         flush_in();
         fgets(word, MAX_CHAR_LEN, stdin);
 
+        word[strlen(word) - 1] = 0; //remove '\n'
         tam = strlen(word);
-        word[tam - 1] = 0; //remove '\n'
 
         while (fgets(rowTemp, MAX_LINE_LEN, fp_decode))
         {
