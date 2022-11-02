@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #define ERR_OPEN_CODE "\n[ERRO] Nao foi possivel abrir o arquivo codificado"
 #define ERR_OPEN_DECODE "\n[ERRO] Nao foi possivel abrir o arquivo decodificado"
@@ -205,31 +206,40 @@ void pesquisa_palavra() /*Procura uma dada palavra e exibe sua frequencia*/
 
     if ((fp_decode = fopen(file_decode, "r")))
     {
-        char word[MAX_CHAR_LEN], rowTemp[MAX_LINE_LEN], linesExist[MAX_ROWS][MAX_LINE_LEN], *substr;
-        int numRows = 0, existFile = 0, existLine = 0, indexExist = 0, tam;
+        char word[MAX_CHAR_LEN], linesExist[MAX_ROWS][MAX_LINE_LEN];
+        char rowTemp[MAX_LINE_LEN], tempStr[MAX_LINE_LEN], *subStr;
+        unsigned numRows = 0, existFile = 0, existLine = 0, indexExist = 0, i;
 
         fputs("\nQual palavra pesquisar: ", stdout);
         flush_in();
         fgets(word, MAX_CHAR_LEN, stdin);
 
         word[strlen(word) - 1] = 0; //remove '\n'
-        tam = strlen(word);
 
         while (fgets(rowTemp, MAX_LINE_LEN, fp_decode))
         {
             numRows++;
-            substr = rowTemp; //substr recebe a string-linha atual do arquivo decodificado
+            strcpy(tempStr, rowTemp); //tempStr recebe a string-linha atual do arquivo decodificado
 
-            while ((substr = strstr(substr, word))) //Verifica a ocorrencia da palavra na linha
+            for (i = 0; i < strlen(tempStr); i++) { //Substitui qualquer char nao alfanumerico por SPACE
+                if (!isalnum(tempStr[i]))
+                    tempStr[i] = ' ';
+            }
+            subStr = strtok(tempStr, " "); //Divide certo (sem pontuaçoes etc.)
+
+            while (subStr) 
             {
-                existLine++;
+                if (!strcmp(subStr, word)) //Verifica a ocorrencia da palavra, comparando-a com as palavras da linha
+                {
+                    existLine++;
 
-                if (existLine == 1) {
-                    rowTemp[strlen(rowTemp) - 1] = 0;
-                    snprintf(linesExist[indexExist++], MAX_LINE_LEN, "[linha:%d] %s", numRows, rowTemp);
-                    //Registra a string-linha de ocorrencia
+                    if (existLine == 1) {
+                        rowTemp[strlen(rowTemp) - 1] = 0;
+                        snprintf(linesExist[indexExist++], MAX_LINE_LEN, "[linha:%d] %s", numRows, rowTemp);
+                        //Registra a string-linha de ocorrencia
+                    }
                 }
-                memmove(substr, substr + tam, strlen(substr + tam) + 1);
+                subStr = strtok(NULL, " ");
             }    
             existFile += existLine; //Numero total de ocorrencias
             existLine = 0;
@@ -238,7 +248,7 @@ void pesquisa_palavra() /*Procura uma dada palavra e exibe sua frequencia*/
         if (existFile) {
             printf("\nAs linhas em que a palavra '%s' ocorre:\n\n", word);
 
-            for (int i = 0; i < indexExist; i++) {
+            for (i = 0; i < indexExist; i++) {
                 printf("%s\n", linesExist[i]); 
             }
             printf("\ne tem %d ocorrencias.\n\n", existFile);
