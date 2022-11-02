@@ -5,6 +5,7 @@
 #define ERR_OPEN_CODE "\n[ERRO] Nao foi possivel abrir o arquivo codificado"
 #define ERR_OPEN_DECODE "\n[ERRO] Nao foi possivel abrir o arquivo decodificado"
 #define ERR_OPEN_NLINES "\n[ERRO] Nao foi possivel abrir o arquivo enumerado"
+#define ERR_OPEN_DEC_LIN "\n[ERRO] Nao foi possivel abrir o ar"
 
 #define MAX_CHAR_LEN 80
 #define MAX_LINE_LEN 100
@@ -102,8 +103,7 @@ void decifra_arquivo() /*Decodifica o arquivo .txt na pasta*/
         if (fElement != '[' && fElement != ']') {
             chrTemp[index++] = fElement; //Armazena como char cada numero de um caracter ASCII
         }
-        else if (fElement == ']') //Leu 1 caractere [...]
-        {
+        else if (fElement == ']') { //Leu 1 caractere [...]
             inTemp = atoi(chrTemp);
             chrFinal = (char) inTemp;
 
@@ -215,7 +215,7 @@ void pesquisa_palavra() /*Procura uma dada palavra e exibe sua frequencia*/
         fgets(word, MAX_CHAR_LEN, stdin);
 
         tam = strlen(word);
-        word[tam - 1] = 0; //posicao NULL para nao ter erro em strstr
+        word[tam - 1] = 0; //remove '\n'
 
         while (fgets(rowTemp, MAX_LINE_LEN, fp_decode))
         {
@@ -226,21 +226,21 @@ void pesquisa_palavra() /*Procura uma dada palavra e exibe sua frequencia*/
             {
                 existLine++;
 
-                if (existLine == 1)
+                if (existLine == 1) {
+                    rowTemp[strlen(rowTemp) - 1] = 0;
                     snprintf(lineExist[indexExist++], MAX_LINE_LEN, "[linha:%d] %s", numRows, rowTemp);
-
+                }
                 memmove(substr, substr + tam, strlen(substr + tam) + 1);
             }    
             existFile += existLine; //Numero total de ocorrencias
             existLine = 0;
         }
-        
-        if(existFile)
-        {
+        //Saidas
+        if (existFile) {
             printf("\nAs linhas em que a palavra '%s' ocorre:\n\n", word);
 
             for (int i = 0; i < indexExist; i++) {
-                printf("%s", lineExist[i]); 
+                printf("%s\n", lineExist[i]); 
             }
             printf("\ne tem %d ocorrencias.\n\n", existFile);
         }
