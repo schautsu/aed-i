@@ -5,7 +5,6 @@
 #define ERR_OPEN_CODE "\n[ERRO] Nao foi possivel abrir o arquivo codificado"
 #define ERR_OPEN_DECODE "\n[ERRO] Nao foi possivel abrir o arquivo decodificado"
 #define ERR_OPEN_NLINES "\n[ERRO] Nao foi possivel abrir o arquivo enumerado"
-#define ERR_OPEN_DEC_LIN "\n[ERRO] Nao foi possivel abrir o ar"
 
 #define MAX_CHAR_LEN 80
 #define MAX_LINE_LEN 100
