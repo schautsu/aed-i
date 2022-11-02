@@ -205,7 +205,7 @@ void pesquisa_palavra() /*Procura uma dada palavra e exibe sua frequencia*/
 
     if ((fp_decode = fopen(file_decode, "r")))
     {
-        char word[MAX_CHAR_LEN], rowTemp[MAX_LINE_LEN], lineExist[MAX_ROWS][MAX_LINE_LEN], *substr;
+        char word[MAX_CHAR_LEN], rowTemp[MAX_LINE_LEN], linesExist[MAX_ROWS][MAX_LINE_LEN], *substr;
         int numRows = 0, existFile = 0, existLine = 0, indexExist = 0, tam;
 
         fputs("\nQual palavra pesquisar: ", stdout);
@@ -226,7 +226,8 @@ void pesquisa_palavra() /*Procura uma dada palavra e exibe sua frequencia*/
 
                 if (existLine == 1) {
                     rowTemp[strlen(rowTemp) - 1] = 0;
-                    snprintf(lineExist[indexExist++], MAX_LINE_LEN, "[linha:%d] %s", numRows, rowTemp);
+                    snprintf(linesExist[indexExist++], MAX_LINE_LEN, "[linha:%d] %s", numRows, rowTemp);
+                    //Registra a string-linha de ocorrencia
                 }
                 memmove(substr, substr + tam, strlen(substr + tam) + 1);
             }    
@@ -238,7 +239,7 @@ void pesquisa_palavra() /*Procura uma dada palavra e exibe sua frequencia*/
             printf("\nAs linhas em que a palavra '%s' ocorre:\n\n", word);
 
             for (int i = 0; i < indexExist; i++) {
-                printf("%s\n", lineExist[i]); 
+                printf("%s\n", linesExist[i]); 
             }
             printf("\ne tem %d ocorrencias.\n\n", existFile);
         }
