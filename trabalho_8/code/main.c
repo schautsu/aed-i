@@ -41,7 +41,7 @@ int main()
     return (0);
 }
 
-void handler_menu()
+void handler_menu() /*Gerenciador de opcoes do menu*/
 {
     int escolha;
     do {
@@ -72,13 +72,13 @@ void handler_menu()
     } while (escolha != 0);
 }
 
-void gera_menu()
+void gera_menu() /*Exibicao do menu de opcoes*/
 {
     system("cls");
     fputs("\n[1] Decifra arquivo\n[2] Grava numero linha em arquivo\n[3] Quantas linhas tem o arquivo\n[4] Qual a maior linha\n[5] Pesquisar uma palavra\n[0] Encerrar\n\nQual opcao: ", stdout);
 }
 
-int escolha_menu()
+int escolha_menu() /*Gravacao e verificacao de escolha*/
 {
     int escolha;
     do {
@@ -88,7 +88,7 @@ int escolha_menu()
     return (escolha);
 }
 
-void decifra_arquivo()
+void decifra_arquivo() /*Decodifica o arquivo .txt na pasta*/
 {
     FILE *fp_code, *fp_decode;
 
@@ -98,12 +98,11 @@ void decifra_arquivo()
     char fElement, chrTemp[4], chrFinal;
     int inTemp, index = 0;
 
-    do {
-        fread(&fElement, 1, 1, fp_code);
-
+    while (fread(&fElement, 1, 1, fp_code))
+    {
         if (fElement != '[' && fElement != ']')
         {
-            chrTemp[index++] = fElement;
+            chrTemp[index++] = fElement; //Armazena como char cada numero de um caracter ASCII
         }
         else if (fElement == ']') //Leu 1 caractere [...]
         {
@@ -115,8 +114,7 @@ void decifra_arquivo()
             index = 0;
             memset(chrTemp, 0, sizeof(chrTemp)); //Reset do array temporario
         }
-    } while (!feof(fp_code));
-
+    }
     fclose(fp_code);
     fclose(fp_decode);
 
@@ -125,7 +123,7 @@ void decifra_arquivo()
     system("pause");
 }
 
-void grava_linhas()
+void grava_linhas() /*Cria um arquivo com linhas enumeradas*/
 {
     FILE *fp_decode, *fp_nlines;
 
@@ -144,7 +142,7 @@ void grava_linhas()
 
         puts("\n[SUCESSO] Arquivo enumerado!\n");
     } 
-    else {
+    else { //Erro
         perror(ERR_OPEN_DECODE);
         puts("");
     }
@@ -153,7 +151,7 @@ void grava_linhas()
     system("pause");
 }
 
-void numero_linhas()
+void numero_linhas() /*Informa o numero de linhas do arquivo decifrado*/
 {
     FILE *fp_decode;
 
@@ -164,11 +162,11 @@ void numero_linhas()
 
         while (fgets(lineTemp, MAX_LINE_LEN, fp_decode))
         {
-            numRows++;
+            numRows++; //Contador de linhas
         }
         printf("\nO arquivo %s tem (%d) linhas.\n\n", file_decode, numRows);
     }
-    else {
+    else { //Erro
         perror(ERR_OPEN_DECODE);
         puts("");
     }
@@ -177,19 +175,19 @@ void numero_linhas()
     system("pause");
 }
 
-void maior_linha()
+void maior_linha() /*Informa qual e a maior linha e quantos caracteres ela tem*/
 {
     FILE *fp_decode;
 
     if ((fp_decode = fopen(file_decode, "r")))
     {
         char lineTemp[MAX_LINE_LEN]; 
-        unsigned numRows = 0, maior_numChr = 0, maior_row;
+        unsigned numRows = 0, maior_numChr = 0, maior_row = 0;
 
         while (fgets(lineTemp, MAX_LINE_LEN, fp_decode))
         {
             numRows++;   
-            if (strlen(lineTemp) > maior_numChr) 
+            if (strlen(lineTemp) > maior_numChr) //Verifica se a linha atual tem mais caracteres do que a maior
             {
                 maior_row = numRows;
                 maior_numChr = strlen(lineTemp);
@@ -198,7 +196,7 @@ void maior_linha()
         
         printf("\nA linha [%u] e a maior com (%u) caracteres.\n\n", maior_row, maior_numChr);
     }
-    else {
+    else { //Erro
         perror(ERR_OPEN_DECODE);
         puts("");
     }
@@ -207,16 +205,16 @@ void maior_linha()
     system("pause");
 }
 
-void pesquisa_palavra()
+void pesquisa_palavra() /*Procura uma dada palavra e exibe sua frequencia*/
 {
     FILE *fp_decode, *fp_nlines;
 
-    if ((fp_decode = fopen(file_decode, "r")) == NULL)
+    if ((fp_decode = fopen(file_decode, "r")) == NULL) //Erro
     {
         perror(ERR_OPEN_DECODE);
         puts("");
     } 
-    else if ((fp_nlines = fopen(file_nlines, "r")) == NULL)
+    else if ((fp_nlines = fopen(file_nlines, "r")) == NULL) //Erro
     {
         perror(ERR_OPEN_NLINES);
         puts("");
@@ -237,16 +235,16 @@ void pesquisa_palavra()
             fgets(nlinesTemp, MAX_LINE_LEN, fp_nlines);
 
             existLine = 0;
-            substr = rowTemp;
+            substr = rowTemp; //substr recebe a string-linha atual do arquivo decodificado
 
-            while ((substr = strstr(substr, word)))
+            while ((substr = strstr(substr, word))) //Verifica a ocorrencia da palavra na linha
             {
                 existLine++;
                 memmove(substr, substr + tam, strlen(substr + tam) + 1);
 
                 existLine == 1 ? strcpy(lineExist[indexExist++], nlinesTemp) : 0;
             }    
-            existFile += existLine;
+            existFile += existLine; //Numero total de ocorrencias
         }
         
         if(existFile)
@@ -265,7 +263,7 @@ void pesquisa_palavra()
     system("pause");
 }
 
-void flush_in()
+void flush_in() /*Limpeza do buffer do teclado*/
 {
     int c;
     while ((c = getchar()) != '\n' && c != EOF);
