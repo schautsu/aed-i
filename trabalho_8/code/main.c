@@ -5,6 +5,7 @@
 #define ERR_OPEN_CODE "\n[ERRO] Nao foi possivel abrir o arquivo codificado"
 #define ERR_OPEN_DECODE "\n[ERRO] Nao foi possivel abrir o arquivo decodificado"
 #define ERR_OPEN_NLINES "\n[ERRO] Nao foi possivel abrir o arquivo enumerado"
+#define ERR_OPEN_DEC_LIN "\n[ERRO] Nao foi possivel abrir o ar"
 
 #define MAX_CHAR_LEN 80
 #define MAX_LINE_LEN 100
@@ -34,7 +35,6 @@ int main()
         handler_menu();
     } else {
         perror(ERR_OPEN_CODE);
-        puts("");
     }
     fclose(fp_code);
 
@@ -100,8 +100,7 @@ void decifra_arquivo() /*Decodifica o arquivo .txt na pasta*/
 
     while (fread(&fElement, 1, 1, fp_code))
     {
-        if (fElement != '[' && fElement != ']')
-        {
+        if (fElement != '[' && fElement != ']') {
             chrTemp[index++] = fElement; //Armazena como char cada numero de um caracter ASCII
         }
         else if (fElement == ']') //Leu 1 caractere [...]
@@ -135,9 +134,8 @@ void grava_linhas() /*Cria um arquivo com linhas enumeradas*/
         int numRows = 0;
 
         while (fgets(lineTemp, MAX_LINE_LEN, fp_decode))
-        {
             fprintf(fp_nlines, "[linha:%d] %s", ++numRows, lineTemp); //Registra a string-linha no arquivo
-        }
+        
         fclose(fp_nlines);
 
         puts("\n[SUCESSO] Arquivo enumerado!\n");
@@ -161,9 +159,8 @@ void numero_linhas() /*Informa o numero de linhas do arquivo decifrado*/
         int numRows = 0;
 
         while (fgets(lineTemp, MAX_LINE_LEN, fp_decode))
-        {
             numRows++; //Contador de linhas
-        }
+        
         printf("\nO arquivo %s tem (%d) linhas.\n\n", file_decode, numRows);
     }
     else { //Erro
@@ -187,8 +184,8 @@ void maior_linha() /*Informa qual e a maior linha e quantos caracteres ela tem*/
         while (fgets(lineTemp, MAX_LINE_LEN, fp_decode))
         {
             numRows++;   
-            if (strlen(lineTemp) > maior_numChr) //Verifica se a linha atual tem mais caracteres do que a maior
-            {
+
+            if (strlen(lineTemp) > maior_numChr) { //Verifica se a linha atual tem mais caracteres do que a maior
                 maior_row = numRows;
                 maior_numChr = strlen(lineTemp);
             }
@@ -207,21 +204,12 @@ void maior_linha() /*Informa qual e a maior linha e quantos caracteres ela tem*/
 
 void pesquisa_palavra() /*Procura uma dada palavra e exibe sua frequencia*/
 {
-    FILE *fp_decode, *fp_nlines;
+    FILE *fp_decode;
 
-    if ((fp_decode = fopen(file_decode, "r")) == NULL) //Erro
+    if ((fp_decode = fopen(file_decode, "r")))
     {
-        perror(ERR_OPEN_DECODE);
-        puts("");
-    } 
-    else if ((fp_nlines = fopen(file_nlines, "r")) == NULL) //Erro
-    {
-        perror(ERR_OPEN_NLINES);
-        puts("");
-    }
-    else {
-        char word[MAX_CHAR_LEN], rowTemp[MAX_LINE_LEN], nlinesTemp[MAX_LINE_LEN], lineExist[MAX_ROWS][MAX_LINE_LEN], *substr;
-        int existFile = 0, indexExist = 0, existLine, tam;
+        char word[MAX_CHAR_LEN], rowTemp[MAX_LINE_LEN], lineExist[MAX_ROWS][MAX_LINE_LEN], *substr;
+        int numRows = 0, existFile = 0, existLine = 0, indexExist = 0, tam;
 
         fputs("\nQual palavra pesquisar: ", stdout);
         flush_in();
@@ -232,33 +220,38 @@ void pesquisa_palavra() /*Procura uma dada palavra e exibe sua frequencia*/
 
         while (fgets(rowTemp, MAX_LINE_LEN, fp_decode))
         {
-            fgets(nlinesTemp, MAX_LINE_LEN, fp_nlines);
-
-            existLine = 0;
+            numRows++;
             substr = rowTemp; //substr recebe a string-linha atual do arquivo decodificado
 
             while ((substr = strstr(substr, word))) //Verifica a ocorrencia da palavra na linha
             {
                 existLine++;
-                memmove(substr, substr + tam, strlen(substr + tam) + 1);
 
-                existLine == 1 ? strcpy(lineExist[indexExist++], nlinesTemp) : 0;
+                if (existLine == 1)
+                    snprintf(lineExist[indexExist++], MAX_LINE_LEN, "[linha:%d] %s", numRows, rowTemp);
+
+                memmove(substr, substr + tam, strlen(substr + tam) + 1);
             }    
             existFile += existLine; //Numero total de ocorrencias
+            existLine = 0;
         }
         
         if(existFile)
         {
             printf("\nAs linhas em que a palavra '%s' ocorre:\n\n", word);
 
-            for (int i = 0; i < indexExist; i++) printf("%s", lineExist[i]);
-
+            for (int i = 0; i < indexExist; i++) {
+                printf("%s", lineExist[i]); 
+            }
             printf("\ne tem %d ocorrencias.\n\n", existFile);
         }
         else printf("\nNao existem ocorrencias da palavra '%s'!\n\n", word);
+    } 
+    else { //Erro
+        perror(ERR_OPEN_DECODE);
+        puts("");
     }
     fclose(fp_decode);
-    fclose(fp_nlines);
 
     system("pause");
 }
