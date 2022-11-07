@@ -10,6 +10,10 @@
 #define MAX_LINE_LEN 100
 #define MAX_ROWS 800
 
+#define file_code "readme.code.txt"
+#define file_decode "readme.decifra.txt"
+#define file_nlines "readme.nlines.txt"
+
 /*Function prototypes*/
 int escolha_menu(void);
 void handler_menu(void);
@@ -20,11 +24,6 @@ void numero_linhas(void);
 void maior_linha(void);
 void pesquisa_palavra(void);
 void flush_in(void);
-
-/*Filenames*/
-char *file_code = "readme.code.txt";
-char *file_decode = "readme.decifra.txt";
-char *file_nlines = "readme.nlines.txt";
 
 int main()
 {
