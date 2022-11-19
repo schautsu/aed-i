@@ -65,7 +65,6 @@ int main()
 void handler_menu()
 {
     int escolha;
-
     do {
         escolha = escolha_menu();
 
@@ -105,7 +104,6 @@ void gera_menu() /*Exibicao do menu de opcoes*/
 int escolha_menu() /*Gravacao e verificacao de escolha*/
 {
     int escolha;
-
     do {
         gera_menu();
     } while ((escolha < 1 && escolha > 5) || (!scanf("%d", &escolha) && getchar()));
